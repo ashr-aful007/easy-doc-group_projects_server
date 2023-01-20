@@ -24,6 +24,7 @@ async function run() {
         app.put('/user', async (req, res) => {
             const user = req.body;
             const uid = req?.query?.uid;
+            console.log(uid);
             const options = { upsert: true };
             const filter = { uid: uid };
             const updateDoc = {
@@ -33,44 +34,26 @@ async function run() {
             res.send(result);
         });
 
-        // insert google sign up
-        app.put('/users', async(req, res) =>{
-            const user = req.body;
-            const filter = await usersCollections.findOne(user);
-            if(!filter){
-                const result = await usersCollections.insertOne(user);
-                res.send(result);
-            }
-            else{
-                return;
-            }
-        });
-
-        // insert github sign up
-        app.put('/users', async(req, res) =>{
-            const user = req.body;
-            const filter = await usersCollections.findOne(user);
-            if(!filter){
-                const result = await usersCollections.insertOne(user);
-                res.send(result);
-            }
-            else{
-                return;
-            }
-        });
-
-        // get tutorial
-        app.get('/tutorial', async(req, res) =>{
+        // get uer
+        app.get('/user', async (req, res) => {
             const query = {};
-            const result = await tutorialCollections.find(query).toArray();
-            res.send(result);
+            const users = await userCollections.find(query).toArray();
+            res.send(users);
         });
 
-        // get categories
-        app.get('/categories', async(req, res) =>{
-            const query = {};
-            const result = await categoriesCollections.find(query).toArray();
-            res.send(result);
+        // user post collect
+        app.post('/userPost', async(req,res) =>{
+            const userpost = req.body;
+            const result = await userPostCollections.insertOne(userpost)
+            console.log(result)
+            res.send(result)
+        });
+
+        // get user post
+        app.get('/allUserPost', async(req,res) =>{
+            const query = {}
+            const result = await userPostCollections.find(query).toArray()
+            res.send(result)
         })
 
     }
