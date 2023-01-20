@@ -17,6 +17,7 @@ async function run() {
     try {
 
         const userCollections = client.db('easy-doc').collection('users');
+        const userPostCollections = client.db('easy-doc').collection('userPost');
 
         // when user register he/she will be inserted in userCollection
         // if user already exist nothing changes  happened
@@ -36,6 +37,17 @@ async function run() {
             const query = {};
             const users = await userCollections.find(query).toArray();
             res.send(users);
+        })
+        app.post('/userPost', async(req,res) =>{
+            const userpost = req.body;
+            const result = await userPostCollections.insertOne(userpost)
+            console.log(result)
+            res.send(result)
+        })
+        app.get('/allUserPost', async(req,res) =>{
+            const query = {}
+            const result = await userPostCollections.find(query).toArray()
+            res.send(result)
         })
     }
     finally {
