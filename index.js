@@ -23,7 +23,6 @@ async function run() {
         app.put('/user', async (req, res) => {
             const user = req.body;
             const uid = req?.query?.uid;
-            console.log(uid);
             const options = { upsert: true };
             const filter = { uid: uid };
             const updateDoc = {
@@ -33,9 +32,10 @@ async function run() {
             res.send(result);
         })
         app.get('/user', async (req, res) => {
-            const query = {};
-            const users = await userCollections.find(query).toArray();
-            res.send(users);
+            const uid = req.query.uid;
+            const query = { uid: uid };
+            const user = await userCollections.findOne(query);
+            res.send(user);
         })
     }
     finally {
