@@ -33,27 +33,45 @@ async function run() {
             res.send(result);
         });
 
-        // all user get
-        app.get('/user', async (req, res) => {
+        // insert google sign up
+        app.put('/users', async(req, res) =>{
+            const user = req.body;
+            const filter = await usersCollections.findOne(user);
+            if(!filter){
+                const result = await usersCollections.insertOne(user);
+                res.send(result);
+            }
+            else{
+                return;
+            }
+        });
+
+        // insert github sign up
+        app.put('/users', async(req, res) =>{
+            const user = req.body;
+            const filter = await usersCollections.findOne(user);
+            if(!filter){
+                const result = await usersCollections.insertOne(user);
+                res.send(result);
+            }
+            else{
+                return;
+            }
+        });
+
+        // get tutorial
+        app.get('/tutorial', async(req, res) =>{
             const query = {};
-            const users = await userCollections.find(query).toArray();
-            res.send(users);
+            const result = await tutorialCollections.find(query).toArray();
+            res.send(result);
         });
 
-        // post user 
-        app.post('/userPost', async(req,res) =>{
-            const userpost = req.body;
-            const result = await userPostCollections.insertOne(userpost)
-            console.log(result)
-            res.send(result)
-        });
-
-        // get alluserpost
-        app.get('/allUserPost', async(req,res) =>{
-            const query = {}
-            const result = await userPostCollections.find(query).toArray()
-            res.send(result)
-        });
+        // get categories
+        app.get('/categories', async(req, res) =>{
+            const query = {};
+            const result = await categoriesCollections.find(query).toArray();
+            res.send(result);
+        })
 
     }
     finally {
