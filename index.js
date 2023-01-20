@@ -16,6 +16,8 @@ async function run() {
     try{
         
         const usersCollections = client.db('easy-doc').collection('users');
+        const tutorialCollections = client.db('easy-doc').collection('tutorial');
+        const categoriesCollections = client.db('easy-doc').collection('categories');
         
         // insert users with email password
         app.post('/users', async(req, res) =>{
@@ -48,7 +50,22 @@ async function run() {
             else{
                 return;
             }
+        });
+
+        // get tutorial
+        app.get('/tutorial', async(req, res) =>{
+            const query = {};
+            const result = await tutorialCollections.find(query).toArray();
+            res.send(result);
+        });
+
+        // get categories
+        app.get('/categories', async(req, res) =>{
+            const query = {};
+            const result = await categoriesCollections.find(query).toArray();
+            res.send(result);
         })
+
     }
     finally{
 
