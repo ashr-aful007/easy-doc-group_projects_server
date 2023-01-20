@@ -31,6 +31,7 @@ async function run() {
             const result = await userCollections.updateOne(filter, updateDoc, options);
             res.send(result);
         })
+        // get single user by query with uid
         app.get('/user', async (req, res) => {
             const uid = req.query.uid;
             const query = { uid: uid };
