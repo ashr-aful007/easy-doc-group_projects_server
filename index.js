@@ -24,7 +24,6 @@ async function run() {
         app.put('/user', async (req, res) => {
             const user = req.body;
             const uid = req?.query?.uid;
-            console.log(uid);
             const options = { upsert: true };
             const filter = { uid: uid };
             const updateDoc = {
@@ -32,17 +31,17 @@ async function run() {
             }
             const result = await userCollections.updateOne(filter, updateDoc, options);
             res.send(result);
-        });
-
-        // get uer
+        })
+        // get single user by query with uid
         app.get('/user', async (req, res) => {
-            const query = {};
-            const users = await userCollections.find(query).toArray();
-            res.send(users);
+            const uid = req.query.uid;
+            const query = { uid: uid };
+            const user = await userCollections.findOne(query);
+            res.send(user);
         });
 
         // user post collect
-        app.post('/userPost', async(req,res) =>{
+        app.post('/userPost', async (req, res) => {
             const userpost = req.body;
             const result = await userPostCollections.insertOne(userpost)
             console.log(result)
@@ -50,7 +49,7 @@ async function run() {
         });
 
         // get user post
-        app.get('/allUserPost', async(req,res) =>{
+        app.get('/allUserPost', async (req, res) => {
             const query = {}
             const result = await userPostCollections.find(query).toArray()
             res.send(result)
