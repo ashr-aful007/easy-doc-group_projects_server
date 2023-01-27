@@ -84,10 +84,10 @@ async function run() {
         // specif comment
         app.get('/comment/:id', async(req, res) =>{
             const id = req.params.id;
-            const query = {id};
+            const query = {id}
             const result = await commentCollections.find(query).toArray();
             res.send(result);
-        });
+        })
 
         // get doc
         app.get('/doc', async(req, res) =>{
