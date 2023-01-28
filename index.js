@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 
@@ -18,13 +18,16 @@ async function run() {
 
         const userCollections = client.db('easy-doc').collection('users');
         const userPostCollections = client.db('easy-doc').collection('userPost');
+        const blogsCollections = client.db('easy-doc').collection('blogs');
+        const tutorialCollections = client.db('easy-doc').collection('tutorial');
+        const commentCollections = client.db('easy-doc').collection('comment');
+        const docCollections = client.db('easy-doc').collection('doc');
 
         // when user register he/she will be inserted in userCollection
         // if user already exist nothing changes  happened
         app.put('/user', async (req, res) => {
             const user = req.body;
             const uid = req?.query?.uid;
-            console.log(uid);
             const options = { upsert: true };
             const filter = { uid: uid };
             const updateDoc = {
@@ -33,21 +36,65 @@ async function run() {
             const result = await userCollections.updateOne(filter, updateDoc, options);
             res.send(result);
         })
+        // get single user by query with uid
         app.get('/user', async (req, res) => {
-            const query = {};
-            const users = await userCollections.find(query).toArray();
-            res.send(users);
-        })
-        app.post('/userPost', async(req,res) =>{
+            const uid = req.query.uid;
+            const query = { uid: uid };
+            const user = await userCollections.findOne(query);
+            res.send(user);
+        });
+
+        // user post collect
+        app.post('/userPost', async (req, res) => {
             const userpost = req.body;
             const result = await userPostCollections.insertOne(userpost)
             res.send(result)
-        })
-        app.get('/allUserPost', async(req,res) =>{
+        });
+
+        // get user post
+        app.get('/allUserPost', async (req, res) => {
             const query = {}
             const result = await userPostCollections.find(query).toArray()
             res.send(result)
+        });
+
+        // get blog
+        app.get('/blog', async(req, res) =>{
+            const query = {};
+            const result = await blogsCollections.find(query).toArray();
+            res.send(result);
+        });
+
+        // get blog id
+        app.get('/blog/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await blogsCollections.findOne(query);
+            res.send(result);
+        });
+
+        // post comment
+        app.post('/comment', async(req, res) =>{
+            const info = req.body;
+            const result = await commentCollections.insertOne(info);
+            res.send(result);
+        });
+
+        // specif comment
+        app.get('/comment/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query = {id}
+            const result = await commentCollections.find(query).toArray();
+            res.send(result);
         })
+
+        // get doc
+        app.get('/doc', async(req, res) =>{
+            const doc = {};
+            const result = await docCollections.find(doc).toArray();
+            res.send(result);
+        })
+
     }
     finally {
 
