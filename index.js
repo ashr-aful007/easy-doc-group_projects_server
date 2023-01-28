@@ -41,7 +41,6 @@ async function run() {
         app.post('/userPost', async(req,res) =>{
             const userpost = req.body;
             const result = await userPostCollections.insertOne(userpost)
-            console.log(result)
             res.send(result)
         })
         app.get('/allUserPost', async(req,res) =>{
