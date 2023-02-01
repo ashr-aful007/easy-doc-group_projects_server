@@ -21,7 +21,8 @@ async function run() {
         const blogsCollections = client.db('easy-doc').collection('blogs');
         const tutorialCollections = client.db('easy-doc').collection('tutorial');
         const commentCollections = client.db('easy-doc').collection('comment');
-        const docCollections = client.db('easy-doc').collection('doc');
+        const menuCollection = client.db('easy-doc').collection('menu');
+        const subMenuCollection = client.db('easy-doc').collection('subMenu');
 
         // when user register he/she will be inserted in userCollection
         // if user already exist nothing changes  happened
@@ -65,39 +66,44 @@ async function run() {
         });
 
         // get blog
-        app.get('/blog', async(req, res) =>{
+        app.get('/blog', async (req, res) => {
             const query = {};
             const result = await blogsCollections.find(query).toArray();
             res.send(result);
         });
 
         // get blog id
-        app.get('/blog/:id', async(req, res) =>{
+        app.get('/blog/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const result = await blogsCollections.findOne(query);
             res.send(result);
         });
 
         // post comment
-        app.post('/comment', async(req, res) =>{
+        app.post('/comment', async (req, res) => {
             const info = req.body;
             const result = await commentCollections.insertOne(info);
             res.send(result);
         });
 
         // specif comment
-        app.get('/comment/:id', async(req, res) =>{
+        app.get('/comment/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {id};
+            const query = { id };
             const result = await commentCollections.find(query).toArray();
             res.send(result);
         });
-
-        // get doc
-        app.get('/doc', async(req, res) =>{
-            const doc = {};
-            const result = await docCollections.find(doc).toArray();
+        app.get('/menu', async (req, res) => {
+            const query = {};
+            const result = await menuCollection.find(query).toArray();
+            res.send(result);
+        })
+        app.get('/menu/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { menuId: id };
+            const result = await subMenuCollection.find(query).toArray();
             res.send(result);
         })
 
