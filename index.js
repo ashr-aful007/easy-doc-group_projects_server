@@ -21,8 +21,7 @@ async function run() {
         const blogsCollections = client.db('easy-doc').collection('blogs');
         const tutorialCollections = client.db('easy-doc').collection('tutorial');
         const commentCollections = client.db('easy-doc').collection('comment');
-        const menuCollection = client.db('easy-doc').collection('menu');
-        const subMenuCollection = client.db('easy-doc').collection('subMenu');
+        const docCollection = client.db('easy-doc').collection('doc');
 
         // when user register he/she will be inserted in userCollection
         // if user already exist nothing changes  happened
@@ -90,20 +89,15 @@ async function run() {
         // specif comment
         app.get('/comment/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { id };
+            const query = { id }
             const result = await commentCollections.find(query).toArray();
             res.send(result);
-        });
-        app.get('/menu', async (req, res) => {
-            const query = {};
-            const result = await menuCollection.find(query).toArray();
-            res.send(result);
         })
-        app.get('/menu/:id', async (req, res) => {
-            const id = req.params.id;
-            console.log(id);
-            const query = { menuId: id };
-            const result = await subMenuCollection.find(query).toArray();
+
+        // get doc
+        app.get('/doc', async (req, res) => {
+            const doc = {};
+            const result = await docCollection.find(doc).toArray();
             res.send(result);
         })
 
