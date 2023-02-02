@@ -44,6 +44,13 @@ async function run() {
             res.send(user);
         });
 
+        // get all user
+        app.get('/allUser', async(req, res) =>{
+            const user = {};
+            const result = await userCollections.find(user).toArray();
+            res.send(result);
+        })
+
         // user post collect
         app.post('/userPost', async (req, res) => {
             const userpost = req.body;
@@ -51,6 +58,14 @@ async function run() {
             console.log(result)
             res.send(result)
         });
+
+        // admin role
+        // app.get('/allUser/:admin/:email', async(req, res) =>{
+        //     const email = req.params.email;
+        //     const query = {email};
+        //     const result = await userCollections.findOne(query);
+        //     res.send({isAdmin: user?.role === 'admin'});
+        // });
 
         // get user post
         app.get('/allUserPost', async (req, res) => {
@@ -73,6 +88,13 @@ async function run() {
             const result = await blogsCollections.findOne(query);
             res.send(result);
         });
+
+        // blog post
+        app.post('/blog', async(req, res) =>{
+            const blog = req.body;
+            const result = await blogsCollections.insertOne(blog);
+            res.send(result);
+        })
 
         // post comment
         app.post('/comment', async(req, res) =>{
