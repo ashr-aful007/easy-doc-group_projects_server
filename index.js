@@ -60,12 +60,20 @@ async function run() {
         });
 
         // admin role
-        // app.get('/allUser/:admin/:email', async(req, res) =>{
-        //     const email = req.params.email;
-        //     const query = {email};
-        //     const result = await userCollections.findOne(query);
-        //     res.send({isAdmin: user?.role === 'admin'});
-        // });
+        app.get('/user/admin/:email', async(req, res) =>{
+            const email = req.params.email;
+            const query = {email: email};
+            const user = await userCollections.findOne(query);
+            res.send({isAdmin: user?.role === 'admin'});
+        });
+
+        // user delete
+        app.delete('/allUser/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await userCollections.deleteOne(query);
+            res.send(result);
+        })
 
         // get user post
         app.get('/allUserPost', async (req, res) => {
