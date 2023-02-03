@@ -22,6 +22,7 @@ async function run() {
         const tutorialCollections = client.db('easy-doc').collection('tutorial');
         const commentCollections = client.db('easy-doc').collection('comment');
         const docCollections = client.db('easy-doc').collection('doc');
+        const userCommentCollections = client.db('easy-doc').collection('userComment');
 
         // when user register he/she will be inserted in userCollection
         // if user already exist nothing changes  happened
@@ -94,7 +95,24 @@ async function run() {
             const result = await docCollections.find(doc).toArray();
             res.send(result);
         })
-
+        //store user comment for community route
+        app.post('/userComment', async(req, res) =>{
+            const userComment = req.body;
+            const result = await userCommentCollections.insertOne(userComment)
+            res.send(result)
+        })
+        //get user comment for community route
+        app.get('/allUserComment/:id', async(req, res) =>{
+             const id = req.params.id;
+             const query = {postId: id}
+             const result = await userCommentCollections.find(query).toArray()
+             res.send(result)
+        })
+        app.get('/allUserComment', async(req, res) =>{
+            const query = {}
+            const result = await userCommentCollections.find(query).toArray()
+            res.send(result)
+        })
     }
     finally {
 
