@@ -21,12 +21,8 @@ async function run() {
         const blogsCollections = client.db('easy-doc').collection('blogs');
         const tutorialCollections = client.db('easy-doc').collection('tutorial');
         const commentCollections = client.db('easy-doc').collection('comment');
-<<<<<<< HEAD
         const docCollection = client.db('easy-doc').collection('doc');
-=======
-        const docCollections = client.db('easy-doc').collection('doc');
         const userCommentCollections = client.db('easy-doc').collection('userComment');
->>>>>>> main
 
         // when user register he/she will be inserted in userCollection
         // if user already exist nothing changes  happened
