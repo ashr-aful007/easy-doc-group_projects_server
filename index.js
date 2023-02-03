@@ -53,7 +53,6 @@ async function run() {
         app.post('/userPost', async (req, res) => {
             const userpost = req.body;
             const result = await userPostCollections.insertOne(userpost)
-            console.log(result)
             res.send(result)
         });
 
@@ -95,10 +94,22 @@ async function run() {
         })
 
         // get doc
-        app.get('/doc', async (req, res) => {
-            const doc = {};
-            const result = await docCollection.find(doc).toArray();
+        app.get('/menu', async (req, res) => {
+            const query = {};
+            const result = await docCollection.find(query).toArray();
             res.send(result);
+        })
+        app.get('/menu/:id', async (req, res) => {
+            const id = req.params.id;
+            const singleMenu = await docCollection.findOne({ id: id });
+            if (singleMenu) {
+                res.send(singleMenu);
+            }
+            else {
+                const menu = await docCollection.findOne({ subMenu: { $elemMatch: { id: id } } });
+                const submenu = menu.subMenu.find(sub => sub.id == id);
+                res.send(submenu);
+            }
         })
 
     }
