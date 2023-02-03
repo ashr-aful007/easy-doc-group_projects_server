@@ -21,7 +21,12 @@ async function run() {
         const blogsCollections = client.db('easy-doc').collection('blogs');
         const tutorialCollections = client.db('easy-doc').collection('tutorial');
         const commentCollections = client.db('easy-doc').collection('comment');
+<<<<<<< HEAD
         const docCollection = client.db('easy-doc').collection('doc');
+=======
+        const docCollections = client.db('easy-doc').collection('doc');
+        const userCommentCollections = client.db('easy-doc').collection('userComment');
+>>>>>>> main
 
         // when user register he/she will be inserted in userCollection
         // if user already exist nothing changes  happened
@@ -49,12 +54,35 @@ async function run() {
             res.send(user);
         });
 
+        // get all user
+        app.get('/allUser', async (req, res) => {
+            const user = {};
+            const result = await userCollections.find(user).toArray();
+            res.send(result);
+        })
+
         // user post collect
         app.post('/userPost', async (req, res) => {
             const userpost = req.body;
             const result = await userPostCollections.insertOne(userpost)
             res.send(result)
         });
+
+        // admin role
+        app.get('/user/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await userCollections.findOne(query);
+            res.send({ isAdmin: user?.role === 'admin' });
+        });
+
+        // user delete
+        app.delete('/allUser/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await userCollections.deleteOne(query);
+            res.send(result);
+        })
 
         // get user post
         app.get('/allUserPost', async (req, res) => {
@@ -77,6 +105,13 @@ async function run() {
             const result = await blogsCollections.findOne(query);
             res.send(result);
         });
+
+        // blog post
+        app.post('/blog', async (req, res) => {
+            const blog = req.body;
+            const result = await blogsCollections.insertOne(blog);
+            res.send(result);
+        })
 
         // post comment
         app.post('/comment', async (req, res) => {
@@ -112,6 +147,24 @@ async function run() {
             }
         })
 
+        //store user comment for community route
+        app.post('/userComment', async (req, res) => {
+            const userComment = req.body;
+            const result = await userCommentCollections.insertOne(userComment)
+            res.send(result)
+        })
+        //get user comment for community route
+        app.get('/allUserComment/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { postId: id }
+            const result = await userCommentCollections.find(query).toArray()
+            res.send(result)
+        })
+        app.get('/allUserComment', async (req, res) => {
+            const query = {}
+            const result = await userCommentCollections.find(query).toArray()
+            res.send(result)
+        })
     }
     finally {
 
