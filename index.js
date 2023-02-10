@@ -4,6 +4,8 @@ const app = express();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
+//payment srtipe key
+const stripe = require('stripe')('sk_test_51MXOWSGYEoGN3ZPinOJgpoPOrKNm01m4zqXdFFoCl3KFDL7Y8xrJdOKbYFb3ANEyBkHUkWQHbkpfqO5d1w0IPw3w00eOxlapZk');
 
 // middleware
 app.use(cors());
@@ -23,6 +25,35 @@ async function run() {
         const commentCollections = client.db('easy-doc').collection('comment');
         const docCollection = client.db('easy-doc').collection('doc');
         const userCommentCollections = client.db('easy-doc').collection('userComment');
+        const paymentCollectionSubscription = client.db('easy-doc').collection('subscriptionPayment');
+        const allcourses = client.db('easy-doc').collection('courses');
+         
+
+
+
+
+        //payment route with stripe initail route
+        app.post('/create-payment-intent', async(req, res) =>{
+            const booking = req.body;
+            const price = booking.price;
+            const amount = price * 100;
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: 'usd',
+                amount: amount,
+                "payment_method_types": [
+                    "card"
+                ]
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            })
+        })
+        //collect payment info
+        app.post('/payments', async(req, res) => {
+            const payment = req.body;
+            const result = await paymentCollectionSubscription.insertOne(payment);
+            res.send(result)
+        })
 
         // when user register he/she will be inserted in userCollection
         // if user already exist nothing changes  happened
@@ -36,6 +67,12 @@ async function run() {
             }
             const result = await userCollections.updateOne(filter, updateDoc, options);
             res.send(result);
+        })
+        //all courses route for all courses
+        app.get('/allcourses', async(req, res) =>{
+            const query ={}
+            const allcours = await allcourses.find(query).toArray();
+            res.send(allcours)
         })
         // get single user by query with uid
         app.get('/user', async (req, res) => {
