@@ -25,6 +25,7 @@ async function run() {
         const commentCollections = client.db('easy-doc').collection('comment');
         const docCollection = client.db('easy-doc').collection('doc');
         const userCommentCollections = client.db('easy-doc').collection('userComment');
+        const paymentCollectionSubscription = client.db('easy-doc').collection('subscriptionPayment');
 
 
 
@@ -45,7 +46,12 @@ async function run() {
                 clientSecret: paymentIntent.client_secret,
             })
         })
-
+        //collect payment info
+        app.post('/payments', async(req, res) => {
+            const payment = req.body;
+            const result = await paymentCollectionSubscription.insertOne(payment);
+            res.send(result)
+        })
 
         // when user register he/she will be inserted in userCollection
         // if user already exist nothing changes  happened
