@@ -26,6 +26,8 @@ async function run() {
         const docCollection = client.db('easy-doc').collection('doc');
         const userCommentCollections = client.db('easy-doc').collection('userComment');
         const paymentCollectionSubscription = client.db('easy-doc').collection('subscriptionPayment');
+        const allcourses = client.db('easy-doc').collection('courses');
+         
 
 
 
@@ -65,6 +67,12 @@ async function run() {
             }
             const result = await userCollections.updateOne(filter, updateDoc, options);
             res.send(result);
+        })
+        //all courses route for all courses
+        app.get('/allcourses', async(req, res) =>{
+            const query ={}
+            const allcours = await allcourses.find(query).toArray();
+            res.send(allcours)
         })
         // get single user by query with uid
         app.get('/user', async (req, res) => {
