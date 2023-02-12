@@ -23,7 +23,7 @@ async function run() {
         const blogsCollections = client.db('easy-doc').collection('blogs');
         const tutorialCollections = client.db('easy-doc').collection('tutorial');
         const commentCollections = client.db('easy-doc').collection('comment');
-        const docCollection = client.db('easy-doc').collection('doc');
+        const docCollection = client.db('easy-doc').collection('documentation');
         const userCommentCollections = client.db('easy-doc').collection('userComment');
         const paymentCollectionSubscription = client.db('easy-doc').collection('subscriptionPayment');
         const allcourses = client.db('easy-doc').collection('courses');
@@ -160,25 +160,17 @@ async function run() {
             const result = await commentCollections.find(query).toArray();
             res.send(result);
         })
-
-        // get doc
-        app.get('/menu', async (req, res) => {
-            const query = {};
-            const result = await docCollection.find(query).toArray();
+        app.get('/doc-data', async (req, res) => {
+            const result = await docCollection.find({}).project({ title: 1, id: 1, category: 1 }).toArray();
             res.send(result);
         })
-        app.get('/menu/:id', async (req, res) => {
+        app.get('/doc-data/:id', async (req, res) => {
             const id = req.params.id;
-            const singleMenu = await docCollection.findOne({ id: id });
-            if (singleMenu) {
-                res.send(singleMenu);
-            }
-            else {
-                const menu = await docCollection.findOne({ subMenu: { $elemMatch: { id: id } } });
-                const submenu = menu.subMenu.find(sub => sub.id == id);
-                res.send(submenu);
-            }
+            const query = { id: id };
+            const result = await docCollection.findOne(query);
+            res.send(result);
         })
+
 
         //store user comment for community route
         app.post('/userComment', async (req, res) => {
