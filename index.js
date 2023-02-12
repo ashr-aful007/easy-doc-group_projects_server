@@ -27,13 +27,13 @@ async function run() {
         const userCommentCollections = client.db('easy-doc').collection('userComment');
         const paymentCollectionSubscription = client.db('easy-doc').collection('subscriptionPayment');
         const allcourses = client.db('easy-doc').collection('courses');
-         
+
 
 
 
 
         //payment route with stripe initail route
-        app.post('/create-payment-intent', async(req, res) =>{
+        app.post('/create-payment-intent', async (req, res) => {
             const booking = req.body;
             const price = booking.price;
             const amount = price * 100;
@@ -49,7 +49,7 @@ async function run() {
             })
         })
         //collect payment info
-        app.post('/payments', async(req, res) => {
+        app.post('/payments', async (req, res) => {
             const payment = req.body;
             const result = await paymentCollectionSubscription.insertOne(payment);
             res.send(result)
@@ -69,8 +69,8 @@ async function run() {
             res.send(result);
         })
         //all courses route for all courses
-        app.get('/allcourses', async(req, res) =>{
-            const query ={}
+        app.get('/allcourses', async (req, res) => {
+            const query = {}
             const allcours = await allcourses.find(query).toArray();
             res.send(allcours)
         })
@@ -160,6 +160,7 @@ async function run() {
             const result = await commentCollections.find(query).toArray();
             res.send(result);
         })
+        // here all doc data comes
         app.get('/doc-data', async (req, res) => {
             const result = await docCollection.find({}).project({ title: 1, id: 1, category: 1 }).toArray();
             res.send(result);
