@@ -21,7 +21,6 @@ async function run() {
         const userCollections = client.db('easy-doc').collection('users');
         const userPostCollections = client.db('easy-doc').collection('userPost');
         const blogsCollections = client.db('easy-doc').collection('blogs');
-        const tutorialCollections = client.db('easy-doc').collection('tutorial');
         const commentCollections = client.db('easy-doc').collection('comment');
         const docCollection = client.db('easy-doc').collection('documentation');
         const userCommentCollections = client.db('easy-doc').collection('userComment');
