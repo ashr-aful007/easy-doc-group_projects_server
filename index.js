@@ -190,7 +190,19 @@ async function run() {
         .toArray();
       res.send(result);
     });
-    app.get("/doc-data/:id", async (req, res) => {
+    app.get("/interview/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { id: id };
+      const result = await docCollection.findOne(query);
+      res.send(result);
+    });
+    app.get("/error/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { id: id };
+      const result = await docCollection.findOne(query);
+      res.send(result);
+    });
+    app.get("/installation/:id", async (req, res) => {
       const id = req.params.id;
       const query = { id: id };
       const result = await docCollection.findOne(query);
