@@ -35,6 +35,7 @@ async function run() {
       .collection("subscriptionPayment");
     const allcourses = client.db("easy-doc").collection("courses");
     const quizCollection = client.db("easy-doc").collection("quiz");
+    const feedbackCollection = client.db("easy-doc").collection("feedback");
 
     // quiz
     app.get("/quiz", async (req, res) => {
@@ -50,6 +51,21 @@ async function run() {
       const result = await quizCollection.findOne(query);
       res.send(result);
     });
+
+    // post feedback
+    app.post('/feedback', async(req, res) =>{
+      const userFeedback = req.body;
+      console.log(userFeedback)
+      const result = await feedbackCollection.insertOne(userFeedback);
+      res.send(result);
+    });
+
+    // get feedback
+    app.get('/feedback', async(req, res) =>{
+      const feedback = {};
+      const result = await feedbackCollection.find(feedback).toArray();
+      res.send(result);
+    })
 
     //payment route with stripe initail route
     app.post("/create-payment-intent", async (req, res) => {
