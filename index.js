@@ -88,6 +88,21 @@ async function run() {
             res.send(result);
         });
 
+        // payment user delete
+        app.delete('/paymentUsers/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await paymentCollectionSubscription.deleteOne(query);
+            res.send(result);
+        })
+
+        // all payment users
+        app.get('/paymentUsers', async(req, res) =>{
+            const paymentUser = {};
+            const result = await paymentCollectionSubscription.find(paymentUser).toArray();
+            res.send(result);
+        })
+
         // when user register he/she will be inserted in userCollection
         // if user already exist nothing changes  happened
         app.put("/user", async (req, res) => {
