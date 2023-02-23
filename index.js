@@ -208,6 +208,12 @@ async function run() {
       const result = await docCollection.findOne(query);
       res.send(result);
     });
+    app.get("/apireference/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { id: id };
+      const result = await docCollection.findOne(query);
+      res.send(result);
+    });
 
     //store user comment for community route
     app.post("/userComment", async (req, res) => {
