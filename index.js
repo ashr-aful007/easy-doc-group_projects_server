@@ -240,6 +240,13 @@ async function run() {
             res.send(result);
         });
 
+        app.get("/main-concept/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await docCollection.findOne(query);
+            res.send(result);
+        });
+
         //store user comment for community route
         app.post("/userComment", async (req, res) => {
             const userComment = req.body;
