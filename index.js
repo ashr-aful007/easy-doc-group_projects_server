@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const jwt = require('jsonwebtoken');
 const app = express();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
@@ -20,6 +21,21 @@ const client = new MongoClient(uri, {
     serverApi: ServerApiVersion.v1,
 });
 
+// verifying that user has token or not
+function verifyJWT(req, res, next) {
+    const userToken = req.headers.authorization.split(' ')[1];
+    if (!userToken) {
+        return res.status(401).send({ message: 'you have no token so we can not give access' })
+    }
+    jwt.verify(userToken, process.env.ACCESS_TOKEN, function (err, decoded) {
+        if (err) {
+            return res.status(402).send({ message: 'You have token but not valid' })
+        }
+        req.decoded = decoded;
+        next();
+    })
+}
+
 async function run() {
     try {
         const userCollections = client.db("easy-doc").collection("users");
@@ -37,6 +53,11 @@ async function run() {
         const quizCollection = client.db("easy-doc").collection("quiz");
         const feedbackCollection = client.db("easy-doc").collection("feedback");
 
+        app.post('/jwt', (req, res) => {
+            const user = req.body;
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '1d' });
+            res.send({ token });
+        })
         // quiz
         app.get("/quiz", async (req, res) => {
             const quiz = {};
@@ -89,7 +110,7 @@ async function run() {
         });
 
         // payment user delete
-        app.delete('/paymentUsers/:id', async(req, res) =>{
+        app.delete('/paymentUsers/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await paymentCollectionSubscription.deleteOne(query);
@@ -97,7 +118,7 @@ async function run() {
         })
 
         // all payment users
-        app.get('/paymentUsers', async(req, res) =>{
+        app.get('/paymentUsers', async (req, res) => {
             const paymentUser = {};
             const result = await paymentCollectionSubscription.find(paymentUser).toArray();
             res.send(result);
@@ -107,9 +128,9 @@ async function run() {
         // if user already exist nothing changes  happened
         app.put("/user", async (req, res) => {
             const user = req.body;
-            const uid = req?.query?.uid;
+            const email = req?.query?.email;
             const options = { upsert: true };
-            const filter = { uid: uid };
+            const filter = { email: email };
             const updateDoc = {
                 $set: user,
             };
@@ -127,18 +148,18 @@ async function run() {
             res.send(allcours);
         });
         // get single user by query with uid
-        app.get("/user", async (req, res) => {
-            const uid = req.query.uid;
-            const query = { uid: uid };
+        app.get("/user", verifyJWT, async (req, res) => {
+            const decoded = req.decoded;
+            const email = req?.query?.email;
+            console.log('inside user api', decoded);
+            if (decoded.email !== email) {
+                return res.status(403).send({ message: 'forbidden access' })
+            }
+
+            const query = { email: email };
             const user = await userCollections.findOne(query);
             res.send(user);
         });
-        app.get("/users", async (req, res) => {
-            const query = {};
-            const user = await userCollections.find(query).toArray();
-            res.send(user);
-        });
-
         // get all user
         app.get("/allUser", async (req, res) => {
             const user = {};
@@ -239,6 +260,12 @@ async function run() {
             const result = await docCollection.findOne(query);
             res.send(result);
         });
+        app.get("/hooks/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await docCollection.findOne(query);
+            res.send(result);
+        });
         app.get("/apireference/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -271,7 +298,8 @@ async function run() {
             const result = await userCommentCollections.find(query).toArray();
             res.send(result);
         });
-    } finally {
+    }
+    finally {
     }
 }
 run().catch((error) => console.error(error));
