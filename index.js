@@ -76,7 +76,6 @@ async function run() {
         // post feedback
         app.post('/feedback', async (req, res) => {
             const userFeedback = req.body;
-            console.log(userFeedback)
             const result = await feedbackCollection.insertOne(userFeedback);
             res.send(result);
         });
@@ -109,6 +108,21 @@ async function run() {
             const result = await paymentCollectionSubscription.insertOne(payment);
             res.send(result);
         });
+
+        // payment user delete
+        app.delete('/paymentUsers/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await paymentCollectionSubscription.deleteOne(query);
+            res.send(result);
+        })
+
+        // all payment users
+        app.get('/paymentUsers', async (req, res) => {
+            const paymentUser = {};
+            const result = await paymentCollectionSubscription.find(paymentUser).toArray();
+            res.send(result);
+        })
 
         // when user register he/she will be inserted in userCollection
         // if user already exist nothing changes  happened
@@ -252,6 +266,19 @@ async function run() {
             const result = await docCollection.findOne(query);
             res.send(result);
         });
+        app.get("/apireference/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await docCollection.findOne(query);
+            res.send(result);
+        });
+
+        app.get("/main-concept/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await docCollection.findOne(query);
+            res.send(result);
+        });
 
         //store user comment for community route
         app.post("/userComment", async (req, res) => {
@@ -271,7 +298,8 @@ async function run() {
             const result = await userCommentCollections.find(query).toArray();
             res.send(result);
         });
-    } finally {
+    }
+    finally {
     }
 }
 run().catch((error) => console.error(error));
