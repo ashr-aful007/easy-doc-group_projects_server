@@ -151,7 +151,6 @@ async function run() {
         app.get("/user", verifyJWT, async (req, res) => {
             const decoded = req.decoded;
             const email = req?.query?.email;
-            console.log('inside user api', decoded);
             if (decoded.email !== email) {
                 return res.status(403).send({ message: 'forbidden access' })
             }
