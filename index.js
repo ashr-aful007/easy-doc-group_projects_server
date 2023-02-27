@@ -23,13 +23,14 @@ const client = new MongoClient(uri, {
 
 // verifying that user has token or not
 function verifyJWT(req, res, next) {
-    const userToken = req.headers.authorization.split(' ')[1];
-    if (!userToken) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
         return res.status(401).send({ message: 'you have no token so we can not give access' })
     }
+    const userToken = authHeader.split(' ')[1];
     jwt.verify(userToken, process.env.ACCESS_TOKEN, function (err, decoded) {
         if (err) {
-            return res.status(402).send({ message: 'You have token but not valid' })
+            return res.status(402).send({ message: 'token is not valid or you lost your token' })
         }
         req.decoded = decoded;
         next();
@@ -55,7 +56,7 @@ async function run() {
 
         app.post('/jwt', (req, res) => {
             const user = req.body;
-            const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '1d' });
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '2d' });
             res.send({ token });
         })
         // quiz
