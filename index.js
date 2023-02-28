@@ -30,7 +30,7 @@ function verifyJWT(req, res, next) {
     const userToken = authHeader.split(' ')[1];
     jwt.verify(userToken, process.env.ACCESS_TOKEN, function (err, decoded) {
         if (err) {
-            return res.status(402).send({ message: 'token is not valid or you lost your token' })
+            return res.status(403).send({ message: 'token is not valid or you lost your token' })
         }
         req.decoded = decoded;
         next();
@@ -54,10 +54,15 @@ async function run() {
         const quizCollection = client.db("easy-doc").collection("quiz");
         const feedbackCollection = client.db("easy-doc").collection("feedback");
 
-        app.post('/jwt', (req, res) => {
-            const user = req.body;
-            const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '2d' });
-            res.send({ token });
+        app.get('/jwt', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const user = await userCollections.findOne(query);
+            if (user) {
+                const token = jwt.sign({ user }, process.env.ACCESS_TOKEN, { expiresIn: '2d' });
+                return res.send({ accessToken: token })
+            }
+            res.status(403).send({ accessToken: '' })
         })
         // quiz
         app.get("/quiz", async (req, res) => {
@@ -156,13 +161,8 @@ async function run() {
             res.send(result);
         })
         // get single user by query with uid
-        app.get("/user", verifyJWT, async (req, res) => {
-            const decoded = req.decoded;
-            const email = req?.query?.email;
-            if (decoded.email !== email) {
-                return res.status(403).send({ message: 'forbidden access' })
-            }
-
+        app.get("/user", async (req, res) => {
+            const email = req.query.email;
             const query = { email: email };
             const user = await userCollections.findOne(query);
             res.send(user);
