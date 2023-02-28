@@ -148,6 +148,13 @@ async function run() {
             const allcours = await allcourses.find(query).toArray();
             res.send(allcours);
         });
+        //courses details for single course
+        app.get("/coursesDetails/:id", async(req, res) =>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)}
+            const result = await allcourses.findOne(query);
+            res.send(result);
+        })
         // get single user by query with uid
         app.get("/user", verifyJWT, async (req, res) => {
             const decoded = req.decoded;
