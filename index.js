@@ -62,7 +62,10 @@ async function run() {
                 const token = jwt.sign({ user }, process.env.ACCESS_TOKEN, { expiresIn: '2d' });
                 return res.send({ accessToken: token })
             }
-            res.status(403).send({ accessToken: '' })
+            else {
+                return res.status(403).send({ accessToken: '' })
+            }
+
         })
         // quiz
         app.get("/quiz", async (req, res) => {
